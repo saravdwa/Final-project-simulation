@@ -59,13 +59,13 @@ public class Helper {
             return 1;
     }
 
-    int uniform_distribution(double a, double b){
+    public int uniform_distribution(double a, double b){
         float j1 = rand()%1000/1000;
         return (int) a + (b-a) * j1;
     }
 
 
-    int triangular_distribution(int a, int b, int c){
+    public int triangular_distribution(int a, int b, int c){
         float mean, stdev,x, L;
 
         mean = (a+b+c)/3;
