@@ -31,7 +31,7 @@ public class Simulation {
     int W, R;                          // number of weeks 😊 runs lenght) and number of replications (set their values yourself in the initalization method!)
     int d,s,w,r;
     int rule;                          // the appointment scheduling rule
-    Slot[] weekSchedule;  // array of the cyclic slot schedule (days-slots)
+    Slot[][] weekSchedule = new Slot[D][s];  // array of the cyclic slot schedule (days-slots)
     // TODO: moet nog GEINITEERD WORDEN?
 
 
