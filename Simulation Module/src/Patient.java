@@ -43,6 +43,7 @@ public class Patient {
             System.out.println("CAN NOT CALCULATE APPOINTMENT WT OF PATIENT %d" + nr);
             System.exit(1);
         }
+        return 0;
     }
 
     public double getScanWT(){
@@ -58,6 +59,7 @@ public class Patient {
             System.out.println("CAN NOT CALCULATE SCAN WT OF PATIENT %d" + nr);  // in hours
             System.exit(1);
         }
+        return 0;
     }
 
 }

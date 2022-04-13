@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Simulation {
 
     // Variables and parameters
@@ -23,16 +26,16 @@ public class Simulation {
     int W, R;                          // number of weeks 😊 runs lenght) and number of replications (set their values yourself in the initalization method!)
     int d,s,w,r;
     int rule;                          // the appointment scheduling rule
-    Slot **weekSchedule;               // array of the cyclic slot schedule (days-slots)
+    Slot[] weekSchedule = new Slot[D];  // array of the cyclic slot schedule (days-slots)
+    // TODO: moet nog GEINITEERD WORDEN!!!
 
 
     // Variables within one simuation
-    list<Patient> patients;            // patient list
-    list<Patient>::iterator patient;   // iterator for patient list
-    double *movingAvgElectiveAppWT;    // moving average elective appointment waiting time
-    double *movingAvgElectiveScanWT;   // moving average elective scan waiting time
-    double *movingAvgUrgentScanWT;     // moving average urgent scan waiting time
-    double *movingAvgOT;               // moving average overtime
+    List<Patient> patients = new ArrayList<>(); // patient list
+    double movingAvgElectiveAppWT;    // moving average elective appointment waiting time
+    double movingAvgElectiveScanWT;   // moving average elective scan waiting time
+    double movingAvgUrgentScanWT;     // moving average urgent scan waiting time
+    double movingAvgOT;               // moving average overtime
     double avgElectiveAppWT;           // average elective appointment waiting time
     double avgElectiveScanWT;          // average elective scan waiting time
     double avgUrgentScanWT;            // average urgent scan waiting time
@@ -40,10 +43,15 @@ public class Simulation {
     int numberOfElectivePatientsPlanned;
     int numberOfUrgentPatientsPlanned;
 
-
+    // list<Patient>::iterator patient; (iterator for patient list)
+    public void iteratorPatientList() {
+        for (int i = 0; i < patients.size(); i++) {
+            // code block to be executed
+        }
+    }
 
     // Initialization of a "simulation" object --> dit zijn de 2 constructors denk ik (een gevulde en een lege)
-    simulation::simulation(){
+        public Simulation(int D, int S, double W){
         // Set test case variables
         //TODO: set these variables to the correct values
         inputFileName = "/Users/tinemeersman/Documents/project SMA 2022 student code /input-S1-14.txt";  // input file with schedule
@@ -60,9 +68,9 @@ public class Simulation {
         numberOfUrgentPatientsPlanned = 0;
 
         // Initialize arrays
-        weekSchedule = new Slot*[D];
-        for(d = 0; d < D; d++){
-            weekSchedule[d] = new Slot[S];
+            weekSchedule = new Slot*[D];
+        for(this.d = 0; this.d < D; this.d++){
+            weekSchedule[this.d] = new Slot[S];
         }
         movingAvgElectiveAppWT = new double[W];
         movingAvgElectiveScanWT = new double[W];
@@ -70,7 +78,7 @@ public class Simulation {
         movingAvgOT = new double[W];
     }
 
-    simulation::~simulation(){
+    public Simulation(){
     }
 
 
@@ -81,7 +89,7 @@ public class Simulation {
         double OT = 0;
         double OV = 0;
         setWeekSchedule();          // set cyclic slot schedule based on given input file
-        printf("r \t elAppWT \t elScanWT \t urScanWT \t OT \t OV \n");
+        System.out.printf("r \t elAppWT \t elScanWT \t urScanWT \t OT \t OV \n");
         // run R replications
         for(r = 0; r < R; r++){
             resetSystem();          // reset all variables related to 1 replication
@@ -92,7 +100,7 @@ public class Simulation {
             urgentScanWT += avgUrgentScanWT;
             OT += avgOT;
             OV += avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr;
-            printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", r, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
+            System.out.printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", r, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
         }
         electiveAppWT = electiveAppWT / R;
         electiveScanWT = electiveScanWT / R;
@@ -100,7 +108,7 @@ public class Simulation {
         OT = OT / R;
         OV = OV / R;
         double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
-        printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
+        System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
         // print results
         //FILE *file = fopen("/Users/tinemeersman/Documents/project SMA 2022 student code /output.txt", "a"); // TODO: use your own directory
