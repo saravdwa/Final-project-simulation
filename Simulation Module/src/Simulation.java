@@ -213,42 +213,41 @@ public class Simulation {
         boolean prevIsNoShow = false;
         // go over arrival events (i.e. the moment the patient arrives at the hospital)
         for (int i = 0; i < patients.size(); i++) {
-            {
-                Patient nextPatient = new patients[i];
-                if(patients.scanWeek == -1){ // stop at the first unplanned patient
+
+                if(patients.get(i).scanWeek == -1){ // stop at the first unplanned patient
                     break;
                 }
-        }
 
-            arrivalTime = (double) patient->appTime + patient->tardiness;
+
+            arrivalTime = (double) patients.get(i).appTime + patients.get(i).tardiness;
             // SCAN WT
-            if(!patient->isNoShow){
-                if(patient->scanWeek != prevWeek || patient->scanDay != prevDay){
-                    patient->scanTime = arrivalTime;
+            if(!patients.get(i).isNoShow){
+                if(patients.get(i).scanWeek != prevWeek || patients.get(i).scanDay != prevDay){
+                    patients.get(i).scanTime = arrivalTime;
                 } else{
                     if(prevIsNoShow){
-                        patient->scanTime =  max(weekSchedule[patient->scanDay][patient->slotNr].startTime, max(prevScanEndTime,arrivalTime)); // note we assume we wait at least 15minutes on a no-show patient to see whether he shows or is just late
+                        patients.get(i).scanTime =  max(weekSchedule[patients.get(i).scanDay][patients.get(i).slotNr].startTime, max(prevScanEndTime,arrivalTime)); // note we assume we wait at least 15minutes on a no-show patient to see whether he shows or is just late
                     }else{
-                        patient->scanTime = max(prevScanEndTime,arrivalTime);
+                        patients.get(i).scanTime = max(prevScanEndTime,arrivalTime);
                     }
                 }
-                wt = patient->getScanWT();
-                if(patient->patientType == 1){
-                    movingAvgElectiveScanWT[patient->scanWeek] += wt;
+                wt = patients.get(i).getScanWT();
+                if(patients.get(i).patientType == 1){
+                    movingAvgElectiveScanWT[patients.get(i).scanWeek] += wt;
                 }else{
-                    movingAvgUrgentScanWT[patient->scanWeek] += wt;
+                    movingAvgUrgentScanWT[patients.get(i).scanWeek] += wt;
                 }
-                numberOfPatientsWeek[patient->patientType - 1]++;
-                if(patient->patientType == 1){
+                numberOfPatientsWeek[patients.get(i).patientType - 1]++;
+                if(patients.get(i).patientType == 1){
                     avgElectiveScanWT += wt;
                 }else{
                     avgUrgentScanWT += wt;
                 }
-                numberOfPatients[patient->patientType - 1]++;
+                numberOfPatients[patients.get(i).patientType - 1]++;
             }
 
             // OVERTIME
-            if(prevDay > -1 && prevDay != patient->scanDay){
+            if(prevDay > -1 && prevDay != patients.get(i).scanDay){
                 if(d == 3 || d == 5){
                     movingAvgOT[prevWeek] += max(0.0, prevScanEndTime - 13);
                 }else{
@@ -262,7 +261,7 @@ public class Simulation {
             }
 
             // update moving averages if week ends
-            if(prevWeek != patient->scanWeek){
+            if(prevWeek != patients.get(i).scanWeek){
                 movingAvgElectiveScanWT[prevWeek] = movingAvgElectiveScanWT[prevWeek] / numberOfPatientsWeek[0];
                 movingAvgUrgentScanWT[prevWeek] = movingAvgUrgentScanWT[prevWeek] / numberOfPatientsWeek[1];
                 movingAvgOT[prevWeek] = movingAvgOT[prevWeek] / D;
@@ -271,15 +270,15 @@ public class Simulation {
             }
 
             //set prev patient
-            if(patient->isNoShow){
+            if(patients.get(i).isNoShow){
                 //prevScanEndTime stays the same, it is the end time of the patient before the no-show patient
                 prevIsNoShow = true;
             }else{
-                prevScanEndTime = patient->scanTime + patient->duration;
+                prevScanEndTime = patients.get(i).scanTime + patients.get(i).duration;
                 prevIsNoShow = false;
             }
-            prevWeek = patient->scanWeek;
-            prevDay = patient->scanDay;
+            prevWeek = patients.get(i).scanWeek;
+            prevDay = patients.get(i).scanDay;
         }
         // update moving averages of the last week
         movingAvgElectiveScanWT[W-1] = movingAvgElectiveScanWT[W-1] / numberOfPatientsWeek[0];
@@ -444,7 +443,7 @@ public class Simulation {
         //find first slot of each patient type (note, we assume each day (i.e. also day 0) has at least one slot of each patient type!)
         //elective
         d = 0;
-        bool found = false;
+        boolean found = false;
         for(s = 0; s < S && !found; s++){
             if(weekSchedule[d][s].patientType == 1){
                 day[0] = d;
@@ -465,40 +464,40 @@ public class Simulation {
         // go over SORTED patient list and assign slots
         int previousWeek = 0; int numberOfElective = 0; int numberOfElectivePerWeek = 0;   // keep track of week to know when to update moving average elective appointment waiting time
         double wt; int slotNr;
-        for(patient = patients.begin(); patient != patients.end(); patient++){
+        for(int i = 0; i < patients.size(); i++){
             //Patient *pat = &*patient;
 
             //set index i dependant on patient type
-            int i = patient->patientType - 1;
+            int i = patients.get(i).patientType - 1;
 
             // if still within the planning horizon:
             if(week[i] < W){
 
                 // determine week where we start searching for a slot
-                if(patient->callWeek > week[i]){
-                    week[i] = patient->callWeek;
+                if(patients.get(i).callWeek > week[i]){
+                    week[i] = patients.get(i).callWeek;
                     day[i] = 0;
-                    slot[i] = getNextSlotNrFromTime(day[i], patient->patientType, 0);           // note we assume there is at least one slot of each patient type per day => this line will find first slot of this type
+                    slot[i] = getNextSlotNrFromTime(day[i], patients.get(i).patientType, 0);           // note we assume there is at least one slot of each patient type per day => this line will find first slot of this type
                 }
                 // determine day where we start searching for a slot
-                if(patient->callWeek == week[i] && patient->callDay > day[i]){
-                    day[i] = patient->callDay;
-                    slot[i] = getNextSlotNrFromTime(day[i], patient->patientType, 0);           // note we assume there is at least one slot of each patient type per day => this line will find first slot of this type
+                if(patients.get(i).callWeek == week[i] && patients.get(i).callDay > day[i]){
+                    day[i] = patients.get(i).callDay;
+                    slot[i] = getNextSlotNrFromTime(day[i], patients.get(i).patientType, 0);           // note we assume there is at least one slot of each patient type per day => this line will find first slot of this type
                 }
                 // determine slot
-                if(patient->callWeek == week[i] && patient->callDay == day[i] && patient->callTime >= weekSchedule[day[i]][slot[i]].appTime){
+                if(patients.get(i).callWeek == week[i] && patients.get(i).callDay == day[i] && patients.get(i).callTime >= weekSchedule[day[i]][slot[i]].appTime){
                     // find last slot on day "day[i]"
                     found = false; slotNr = -1;
                     for(s = S - 1; s >= 0 && !found; s--){
-                        if(weekSchedule[day[i]][s].patientType == patient->patientType){
+                        if(weekSchedule[day[i]][s].patientType == patients.get(i).patientType){
                             found = true;
                             slotNr = s;
                         }
                     }
                     // urgent patients have to be treated on the same day either in normal hours or in overtime (!! make sure there are enough overtime slots)
                     // for elective patients: check if the patient call time is before the last slot, i.e. if the patient can be planned on day "day[i]"
-                    if(patient->patientType == 2 || patient->callTime < weekSchedule[day[i]][slotNr].appTime){
-                        slot[i] = getNextSlotNrFromTime(day[i], patient->patientType, patient->callTime);   // find the first elective slot after the call time on day "day[i]"
+                    if(patients.get(i).patientType == 2 || patients.get(i).callTime < weekSchedule[day[i]][slotNr].appTime){
+                        slot[i] = getNextSlotNrFromTime(day[i], patients.get(i).patientType, patients.get(i).callTime);   // find the first elective slot after the call time on day "day[i]"
                     }else{
                         // determine the next day
                         if(day[i] < D - 1){
@@ -508,25 +507,25 @@ public class Simulation {
                             week[i] = week[i] + 1;
                         }
                         if(week[i] < W){   // find the first slot on the next day (if within the planning horizon)
-                            slot[i] = getNextSlotNrFromTime(day[i], patient->patientType, 0);
+                            slot[i] = getNextSlotNrFromTime(day[i], patients.get(i).patientType, 0);
                         }
                     }
                 }
 
                 // schedule the patient
-                patient->scanWeek = week[i];
-                patient->scanDay = day[i];
-                patient->slotNr = slot[i];
-                patient->appTime = weekSchedule[day[i]][slot[i]].appTime;
+                patients.get(i).scanWeek = week[i];
+                patients.get(i).scanDay = day[i];
+                patients.get(i).slotNr = slot[i];
+                patients.get(i).appTime = weekSchedule[day[i]][slot[i]].appTime;
 
                 // update moving average elective appointment waiting time
-                if(patient->patientType == 1){
+                if(patients.get(i).patientType == 1){
                     if(previousWeek < week[i]){
                         movingAvgElectiveAppWT[previousWeek] = movingAvgElectiveAppWT[previousWeek] / numberOfElectivePerWeek;
                         numberOfElectivePerWeek = 0;
                         previousWeek = week[i];
                     }
-                    wt = patient->getAppWT();
+                    wt = patients.get(i).getAppWT();
                     movingAvgElectiveAppWT[week[i]] += wt;
                     numberOfElectivePerWeek++;
                     avgElectiveAppWT += wt;
@@ -538,7 +537,7 @@ public class Simulation {
                 for(w = week[i]; w < W && !found; w++){
                     for(d = startD; d < D && !found; d++){
                         for(s = startS; s < S && !found; s++){
-                            if(weekSchedule[d][s].patientType == patient->patientType){
+                            if(weekSchedule[d][s].patientType == patients.get(i).patientType){
                                 week[i] = w;
                                 day[i] = d;
                                 slot[i] = s;
