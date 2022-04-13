@@ -1,8 +1,11 @@
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 import static java.lang.Double.max;
 
@@ -66,7 +69,7 @@ public class Simulation {
         numberOfUrgentPatientsPlanned = 0;
 
         // Initialize arrays
-            weekSchedule = new Slot[D];
+            weekSchedule = new Slot[D][s];
         for(this.d = 0; this.d < D; this.d++){
             weekSchedule[this.d] = new Slot[S];
         }
@@ -403,7 +406,7 @@ public class Simulation {
     }
 
     public int getNextSlotNrFromTime(int day, int patientType, double time){
-        bool found = false;
+        boolean found = false;
         int slotNr = -1;
         for(s = 0; !found && s < S; s++){
             if(weekSchedule[day][s].appTime > time && patientType == weekSchedule[day][s].patientType){
@@ -412,8 +415,8 @@ public class Simulation {
             }
         }
         if(!found){
-            printf("NO SLOT EXISTS DURING TIME %.2f \n", time);
-            exit(0);
+            System.out.printf("NO SLOT EXISTS DURING TIME %.2f \n", time);
+            System.exit(0);
         }
         return slotNr;
     }
