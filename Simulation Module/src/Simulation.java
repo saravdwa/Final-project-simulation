@@ -1,3 +1,5 @@
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,27 +17,27 @@ public class Simulation {
     double probNoShow = 0.02;
     double meanElectiveDuration = 15;
     double stdevElectiveDuration = 3;
-    double lambdaUrgent[2] = {2.5, 1.25};
-    double probUrgentType[5] = {0.7, 0.1, 0.1, 0.05, 0.05};
-    double cumulativeProbUrgentType[5] = {0.7, 0.8, 0.9, 0.95, 1.0};
-    double meanUrgentDuration[5] = {15, 17.5, 22.5, 30, 30};
-    double stdevUrgentDuration[5] = {2.5, 1, 2.5, 1, 4.5};
+    double[] lambdaUrgent = new double[]{2.5, 1.25};
+    double[] probUrgentType = new double[]{0.7, 0.1, 0.1, 0.05, 0.05};
+    double[] cumulativeProbUrgentType = new double[]{0.7, 0.8, 0.9, 0.95, 1.0};
+    double[] meanUrgentDuration  = new double[] {15, 17.5, 22.5, 30, 30};
+    double[] stdevUrgentDuration  = new double[]{2.5, 1, 2.5, 1, 4.5};
     double weightEl = 1.0 / 168.0;      // objective weight elective appointment wait time
     double weightUr = 1.0 / 9.0;        // objective weight urgent scan wait time
 
     int W, R;                          // number of weeks 😊 runs lenght) and number of replications (set their values yourself in the initalization method!)
     int d,s,w,r;
     int rule;                          // the appointment scheduling rule
-    Slot[] weekSchedule = new Slot[D];  // array of the cyclic slot schedule (days-slots)
-    // TODO: moet nog GEINITEERD WORDEN!!!
+    Slot[] weekSchedule;  // array of the cyclic slot schedule (days-slots)
+    // TODO: moet nog GEINITEERD WORDEN?
 
 
     // Variables within one simuation
     List<Patient> patients = new ArrayList<>(); // patient list
-    double movingAvgElectiveAppWT;    // moving average elective appointment waiting time
-    double movingAvgElectiveScanWT;   // moving average elective scan waiting time
-    double movingAvgUrgentScanWT;     // moving average urgent scan waiting time
-    double movingAvgOT;               // moving average overtime
+    double[] movingAvgElectiveAppWT;    // moving average elective appointment waiting time
+    double[] movingAvgElectiveScanWT;   // moving average elective scan waiting time
+    double[] movingAvgUrgentScanWT;     // moving average urgent scan waiting time
+    double[] movingAvgOT;               // moving average overtime
     double avgElectiveAppWT;           // average elective appointment waiting time
     double avgElectiveScanWT;          // average elective scan waiting time
     double avgUrgentScanWT;            // average urgent scan waiting time
@@ -51,7 +53,7 @@ public class Simulation {
     }
 
     // Initialization of a "simulation" object --> dit zijn de 2 constructors denk ik (een gevulde en een lege)
-        public Simulation(int D, int S, double W){
+        public Simulation(int D, int S, int W){
         // Set test case variables
         //TODO: set these variables to the correct values
         inputFileName = "/Users/tinemeersman/Documents/project SMA 2022 student code /input-S1-14.txt";  // input file with schedule
@@ -68,7 +70,7 @@ public class Simulation {
         numberOfUrgentPatientsPlanned = 0;
 
         // Initialize arrays
-            weekSchedule = new Slot*[D];
+            weekSchedule = new Slot[D];
         for(this.d = 0; this.d < D; this.d++){
             weekSchedule[this.d] = new Slot[S];
         }
@@ -82,7 +84,7 @@ public class Simulation {
     }
 
 
-    public void runSimulations(){
+    public void runSimulations() throws IOException {
         double electiveAppWT = 0;
         double electiveScanWT = 0;
         double urgentScanWT = 0;
@@ -116,10 +118,11 @@ public class Simulation {
         //fclose(file);
     }
 
-    public void setWeekSchedule(){
+    public void setWeekSchedule() throws IOException {
         // Read and set the slot types (0=none, 1=elective, 2=urgent within normal working hours)
-        ifstream inputFile;
-        inputFile.open(inputFileName);
+        FileInputStream inputFile = new FileInputStream();
+        //inputFile.read(inputFileName);
+        //is het in java nodig om een file te openen of gaat dat vanzelf
         int elementInt;
         for(s = 0; s < 32; s++){
             for(d = 0; d < D; d++){
