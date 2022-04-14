@@ -623,47 +623,63 @@ public class Simulation {
         avgElectiveAppWT = avgElectiveAppWT / numberOfElective;
     }
 
-    public void sortPatientsOnAppTime(){
-        patients.sort([](const Patient &patient1, const Patient &patient2){
-            // unplanned patients at the end of the list in order of their call
-            if(patient1.scanWeek == -1 && patient2.scanWeek == -1){
-                if (patient1.callWeek != patient2.callWeek)
-                    return patient1.callWeek < patient2.callWeek;
-                if (patient1.callDay != patient2.callDay)
-                    return patient1.callDay < patient2.callDay;
-                if (patient1.callTime != patient2.callTime)
-                    return patient1.callTime < patient2.callTime;
-                if (patient1.scanType == 2)                             // if arrival time same, urgent patient before elective patient
-                    return true;
-                if (patient2.scanType == 2)
-                    return false;
-                return true;
-            }
-            if(patient1.scanWeek == -1){
-                return false;
-            }
-            if(patient2.scanWeek == -1){
-                return true;
-            }
+    public void sortPatientsOnAppTime()
+    {
+        Collections.sort(patients, new Comparator<Patient>()
+        {
+            public int compare(Patient p1, Patient p2)
+            {
+                Integer weekCount1 = p1.callWeek;
+                Integer weekCount2 = p2.callWeek;
+                Integer dayCount1 = p1.callDay;
+                Integer dayCount2 = p2.callDay;
+                Double timeCount1 = p1.callTime;
+                Double timeCount2 = p2.callTime;
+                Integer scanWeekCount1 = p1.scanWeek;
+                Integer scanWeekCount2 = p2.scanWeek;
+                Integer scanDayCount1 = p1.scanDay;
+                Integer scanDayCount2 = p2.scanDay;;
+                Double scanAppTimeCount1 = p1.appTime;
+                Double scanAppTimeCount2 = p2.appTime;
 
-            if (patient1.scanWeek != patient2.scanWeek)
-                return patient1.scanWeek < patient2.scanWeek;
-            if (patient1.scanDay != patient2.scanDay)
-                return patient1.scanDay < patient2.scanDay;
-            if (patient1.appTime != patient2.appTime)
-                return patient1.appTime < patient2.appTime;
-            if (patient1.scanType == 2)                             // if arrival time same, urgent patient before elective patient
-                return true;
-            if (patient2.scanType == 2)
-                return false;
-            if(patient1.nr < patient2.nr){
-                return true;
+                if(p1.scanWeek == -1 && p2.scanWeek == -1)
+                {
+                    if (weekCount1.compareTo(weekCount2) != 0)
+                        return (weekCount1 < weekCount2) ? 1 : 0; //1 if true, anders 0
+                    if (dayCount1.compareTo(dayCount2) != 0)
+                        return (dayCount1 < dayCount2) ? 1 : 0;
+                    if (timeCount1.compareTo(timeCount2) != 0)
+                        return (timeCount1 < timeCount2) ? 1 : 0;
+                    if (p1.scanType == 2)
+                        return 1;
+                    if (p2.scanType == 2)
+                        return 0;
+                    return 1;
+                }
+                if (p1.scanWeek == -1)
+                    return 0;
+                if (p2.scanWeek == -1)
+                    return 1;
+                return 1;
+
+                if(scanWeekCount1.compareTo(scanWeekCount2)!=0)
+                    return (scanWeekCount1 < scanWeekCount2)?1:0;   //1 if true, anders 0
+                if(scanDayCount1.compareTo(scanDayCount2)!=0)
+                    return (scanDayCount1<scanDayCount2)?1:0;
+                if(scanAppTimeCount1.compareTo(scanAppTimeCount2)!=0)
+                    return (scanAppTimeCount1<scanAppTimeCount2)?1:0;
+                if(p1.scanType == 2)
+                    return 1;
+                if(p2.scanType == 2)
+                    return 0;
+                if(p1.nr< p2.nr)
+                    return 1;
+                if(p1.nr>p2.nr)
+                    return 0;
+                return 1;
             }
-            if(patient1.nr > patient2.nr){
-                return false;
-            }
-            return true;
         });
     }
+
 
 }
