@@ -38,9 +38,10 @@ public class Patient {
 
     public double getAppWT(){
         if(slotNr != -1){
-            return (double)(((scanWeek-callWeek)*7 + scanDay - callDay)*24 + appTime - callTime); // in hours
+            return ((scanWeek-callWeek)*7 + scanDay - callDay)*24 + appTime - callTime; // gets the appointment waiting time in hours
+                                                                                        // = time until appointment
         }else{
-            System.out.println("CAN NOT CALCULATE APPOINTMENT WT OF PATIENT %d" + nr);
+            System.out.println("CAN NOT CALCULATE APPOINTMENT WT OF PATIENT %d" + nr); //because patient is unplanned
             System.exit(1);
         }
         return 0;
@@ -48,13 +49,13 @@ public class Patient {
 
     public double getScanWT(){
         if(scanTime != 0){
-            double wt = 0;
-            if(patientType == 1){ // elective
-                wt = scanTime - (appTime + tardiness);
-            }else{ // urgent
-                wt = scanTime - callTime;
+            double wt;
+            if(patientType == 1){ // elective patient (=has an appointment)
+                wt = scanTime - (appTime + tardiness); //waiting time = actual start of appointment - (planned start+tardiness)
+            }else{ // urgent patient (=has no appointment)
+                wt = scanTime - callTime; // waiting time = actual start of appointment - time of arrival
             }
-            return max(0.0,wt);
+            return max(0.0,wt); //return calculated waiting time
         }else{
             System.out.println("CAN NOT CALCULATE SCAN WT OF PATIENT %d" + nr);  // in hours
             System.exit(1);

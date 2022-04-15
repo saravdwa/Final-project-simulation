@@ -4,6 +4,7 @@ import static java.lang.StrictMath.*;
 
 
 public class Helper {
+
     public double exponential_distribution(double lambda){
         Random r = null;
         float j1 = (float) r.nextInt(1000+1)/1000;
