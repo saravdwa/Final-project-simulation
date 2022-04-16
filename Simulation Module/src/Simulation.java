@@ -4,8 +4,8 @@ import java.util.*;
 import static java.lang.Double.max;
 
 public class Simulation {
-    //files
-    String inputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\input-S1-14.txt"; // dit zijn artur's paths, hoogstwss zijn deze bij jullie anders
+    //files : dit zijn artur's paths, hoogstwss zijn deze bij jullie anders --> indien ja, zet deze dan in commentaar en zet uw path er onder
+    String inputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\input-S1-14.txt";
     String outputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\output.txt";
 
 
