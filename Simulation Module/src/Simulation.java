@@ -1,14 +1,15 @@
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 import static java.lang.Double.max;
 
 public class Simulation {
+    //files
+    String inputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\input-S1-14.txt";
+    String outputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\output.txt";
+
 
     // Variables and parameters (given in assignment explanation)
-    String inputFileName;
     int D = 6;                         // number of days per week (NOTE: Sunday not included! so do NOT use to calculate appointment waiting time)
     int amountOTSlotsPerDay = 10;      // number of overtime slots per day
     int S = 32 + amountOTSlotsPerDay;  // number of slots per day
@@ -53,7 +54,6 @@ public class Simulation {
             /* we have to make our own input file with the schedule we want to use in the simulation and
                and change the path here (this file is then used in the method runSimulation down below
             */
-        inputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\input-S1-14.txt"; // Dit is mijn path (artur)
         W = 10;                      // number of weeks to simulate = run length
         R = 1;                      // number of replications
         rule = 1;                   // the appointment scheduling rule to apply
@@ -81,7 +81,7 @@ public class Simulation {
     This method is called upon in the main method, after creation of a simulation with some parameters
     we have to choose ourselves for each simulation in the constructor (the method before this one)
      */
-    public void runSimulations() {
+    public void runSimulations() throws IOException {
         double electiveAppWT = 0;
         double electiveScanWT = 0;
         double urgentScanWT = 0;
@@ -112,9 +112,22 @@ public class Simulation {
         System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
         // print results
-        //FILE *file = fopen("/Users/tinemeersman/Documents/project SMA 2022 student code /output.txt", "a"); // TODO: use your own directory
+        // FILE *file = fopen("/Users/tinemeersman/Documents/project SMA 2022 student code /output.txt", "a"); // TODO: use your own directory
         // TODO: print the output you need to a .txt file: @Emma kan jij dit doen?
         //fclose(file);
+
+
+        File file = new File(outputFileName);               // if file doesnt exists, then create it
+        if (!file.exists()) {
+            file.createNewFile();                           // create the file
+        } else {
+            PrintWriter writer = new PrintWriter(file);     // empty the file
+            writer.print("");
+            writer.close();
+        }
+        FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(), true); // APPENDS the text file with anything printed to the file during the rest of the procedure
+        PrintWriter printWriter = new PrintWriter(fileWriter);                       // OPEN OUTPUT FILE
+        printWriter.println("test");
     }
 
     public void setWeekSchedule() {
