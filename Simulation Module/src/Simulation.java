@@ -135,7 +135,6 @@ public class Simulation {
                     weekSchedule[d][s].patientType = elementInt;
                 }
             }
-
         }
 
         inputFile.close();
