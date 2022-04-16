@@ -53,7 +53,7 @@ public class Simulation {
             /* we have to make our own input file with the schedule we want to use in the simulation and
                and change the path here (this file is then used in the method runSimulation down below
             */
-        inputFileName = "/Users/tinemeersman/Documents/project SMA 2022 student code /input-S1-14.txt";  // input file with schedule
+        inputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\input-S1-14.txt"; // Dit is mijn path (artur)
         W = 10;                      // number of weeks to simulate = run length
         R = 1;                      // number of replications
         rule = 1;                   // the appointment scheduling rule to apply
