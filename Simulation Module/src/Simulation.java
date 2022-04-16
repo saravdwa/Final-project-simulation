@@ -5,7 +5,7 @@ import static java.lang.Double.max;
 
 public class Simulation {
     //files
-    String inputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\input-S1-14.txt";
+    String inputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\input-S1-14.txt"; // dit zijn artur's paths, hoogstwss zijn deze bij jullie anders
     String outputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\output.txt";
 
 
@@ -13,7 +13,7 @@ public class Simulation {
     int D = 6;                         // number of days per week (NOTE: Sunday not included! so do NOT use to calculate appointment waiting time)
     int amountOTSlotsPerDay = 10;      // number of overtime slots per day
     int S = 32 + amountOTSlotsPerDay;  // number of slots per day
-    double slotLenght = 15.0 / 60.0;             // duration of a slot (in hours)
+    double slotLength = 15.0 / 60.0;             // duration of a slot (in hours)
     double lambdaElective = 28.345; //number of elective arrivals per day follows a Poisson distribution with this lambda
     double meanTardiness = 0;  //tardiness follows a normal distribution with a mean of 0min
     double stdevTardiness = 2.5; //tardiness follows a normal distribution with a standard deviation of 2.5min
@@ -180,7 +180,7 @@ public class Simulation {
                         if (countPatient < 2) {
                             weekSchedule[d][countPatient].appTime = time; //should the first two patients have a different time slot, both starting at 8 or the same one?
                         } else {
-                            weekSchedule[d][s].appTime = time - slotLenght;
+                            weekSchedule[d][s].appTime = time - slotLength;
                         }
                         countPatient++;
                     } else if (rule == 3) {
@@ -188,7 +188,7 @@ public class Simulation {
                         if (s < (S / B)) {  // should this be programmed with the idea in mind that B can be other than 2?
                             weekSchedule[d][s].appTime = 8; //first block always starts at 8
                         } else {
-                            weekSchedule[d][s].appTime = 8 + slotLenght*(S/B);
+                            weekSchedule[d][s].appTime = 8 + slotLength *(S/B);
                         }
                     } else if (rule == 4) {
                         // TODO: Benchmark rule
@@ -198,7 +198,7 @@ public class Simulation {
                 }
 
                 //update time variable
-                time += slotLenght;
+                time += slotLength;
                 if (time == 12) {
                     time = 13;
                 } // skip to the end of the lunch break
