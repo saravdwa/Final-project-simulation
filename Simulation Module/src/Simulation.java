@@ -449,61 +449,6 @@ public class Simulation {
         return slotNr;
     }
 
-    public void schedulePatients1() {
-        Collections.sort(patients, new Comparator<Patient>() {
-
-            public int compare(Patient p1, Patient p2) {
-                Integer weekCount1 = p1.callWeek;
-                Integer weekCount2 = p2.callWeek;
-                Integer dayCount1 = p1.callDay;
-                Integer dayCount2 = p2.callDay;
-                Double timeCount1 = p1.callTime;
-                Double timeCount2 = p2.callTime;
-
-                if (weekCount1.compareTo(weekCount2) != 0) {
-                    return (weekCount1 < weekCount2) ? 1 : 0; //1 if true, anders 0
-                }
-                if (dayCount1.compareTo(dayCount2) != 0) {
-                    return (dayCount1 < dayCount2) ? 1 : 0;
-                }
-                if (timeCount1.compareTo(timeCount2) != 0) {
-                    return (timeCount1 < timeCount2) ? 1 : 0;
-                }
-                if (p1.scanType == 2)
-                    return 1;
-                if (p2.scanType == 2)
-                    return 0;
-
-                return 1;
-            }
-        });
-
-        int[] week = {0, 0}; // week of the next available slot {elective,urgent}
-        int[] day = {0, 0}; // day of the next available slot {elective,urgent}
-        int[] slot = {0, 0}; // slotNr of the next available slot {elective,urgent}
-
-        //find first slot of each patient type (note, we assume each day (i.e. also day 0) has at least one slot of each patient type!)
-        //elective
-        d = 0;
-        boolean found = false;
-        for (s = 0; s < S && !found; s++) {
-            if (weekSchedule[d][s].patientType == 1) {
-                day[0] = d;
-                slot[0] = s;
-                found = true;
-            }
-            //urgent
-            found = false;
-            for (s = 0; s < S && !found; s++) {
-                if (weekSchedule[d][s].patientType == 2) {
-                    day[1] = d;
-                    slot[1] = s;
-                    found = true;
-                }
-            }
-        }
-
-    }
 
     public void schedulePatients() {
         Collections.sort(patients, new Comparator<Patient>() {
