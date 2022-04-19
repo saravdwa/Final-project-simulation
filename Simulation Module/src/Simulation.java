@@ -144,6 +144,7 @@ public class Simulation {
             for (s = 0; s < 32; s++) {
                 for (d = 0; d < D; d++) {
                     elementInt = inputFile.nextInt();
+                    System.out.println("test 1");
                     weekSchedule[d][s].slotType = elementInt;
                     weekSchedule[d][s].patientType = elementInt;
                 }
