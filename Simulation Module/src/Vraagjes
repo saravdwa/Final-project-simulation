@@ -4,3 +4,4 @@ Voor 20/04:
         -> B = number of blocks or number of slots per block?
     - is Bailey welch rule correct?
     -moving averages: division by zero in runOneSimulation
+    -probUrgentType wordt momenteel nergens gebruikt?

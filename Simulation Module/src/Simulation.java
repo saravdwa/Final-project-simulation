@@ -4,9 +4,16 @@ import java.util.*;
 import static java.lang.Double.max;
 
 public class Simulation {
-    //files : dit zijn artur's paths, hoogstwss zijn deze bij jullie anders --> indien ja, zet deze dan in commentaar en zet uw path er onder
-    String inputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\input-S1-14.txt";
-    String outputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\output.txt";
+    //files : ik heb nu een relatief pad gemaakt, zodat het op iedereen zijn computer werkt
+
+    String filePath = "src/input-S1-14.txt";
+    File file = new File(filePath);
+    String inputFileName = file.getPath();
+    //String inputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\input-S1-14.txt";
+    String filePath2 = "src/output.txt";
+    File file2 = new File(filePath2);
+    String outputFileName = file2.getPath();
+    //String outputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\output.txt";
 
 
     // Variables and parameters (given in assignment explanation)
@@ -21,7 +28,7 @@ public class Simulation {
     double meanElectiveDuration = 15; //planned scans follow a normal distribution with mean of 15min
     double stdevElectiveDuration = 3; //planned scans follow a normal distribution with stdev of 3min
     double[] lambdaUrgent = new double[]{2.5, 1.25}; //urgent patients follow Poisson distribution with lamda = 2.5 (full day) vs. lambda = 1.25 (half a day)
-    double[] probUrgentType = new double[]{0.7, 0.1, 0.1, 0.05, 0.05}; //frequencies of scan types urgent patients (see table 2)
+    //double[] probUrgentType = new double[]{0.7, 0.1, 0.1, 0.05, 0.05}; //frequencies of scan types urgent patients (see table 2)
     double[] cumulativeProbUrgentType = new double[]{0.7, 0.8, 0.9, 0.95, 1.0};
     double[] meanUrgentDuration = new double[]{15, 17.5, 22.5, 30, 30};
     double[] stdevUrgentDuration = new double[]{2.5, 1, 2.5, 1, 4.5};
@@ -179,22 +186,23 @@ public class Simulation {
                     } else if (rule == 2) {
                         // TODO: Bailey-Welch rule
                         if (countPatient < 2) {
-                            weekSchedule[d][countPatient].appTime = time; //should the first two patients have a different time slot, both starting at 8 or the same one?
+                            weekSchedule[d][countPatient].appTime = time;
                         } else {
                             weekSchedule[d][s].appTime = time - slotLength;
                         }
                         countPatient++;
                     } else if (rule == 3) {
                         // TODO: Blocking rule
-                        if (s < (S / B)) {  // should this be programmed with the idea in mind that B can be other than 2?
-                            weekSchedule[d][s].appTime = 8; //first block always starts at 8
-                        } else {
-                            weekSchedule[d][s].appTime = 8 + slotLength *(S/B);
+
+                        while (countPatient < B) {
+                            weekSchedule[d][countPatient].appTime = time;
+                            countPatient++;
                         }
+                        countPatient = 0;
                     } else if (rule == 4) {
                         // TODO: Benchmark rule
                         double k = 0.5;
-                        weekSchedule[d][s].appTime = time - k*stdevElectiveDuration;
+                        weekSchedule[d][s].appTime = time - k * stdevElectiveDuration;
                     }
                 }
 
