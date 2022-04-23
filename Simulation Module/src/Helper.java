@@ -6,7 +6,7 @@ import static java.lang.StrictMath.*;
 public class Helper {
 
     public double exponential_distribution(double lambda){
-        Random r = null;
+        Random r = new Random();
         float j1 = (float) r.nextInt(1000+1)/1000;
         if (j1 == 0) {
             j1 += 0.0001;
@@ -47,7 +47,7 @@ public class Helper {
         float v1, v2, t;
         int x;
         do{
-            Random r = null;
+            Random r = new Random();
             v1 = (float) r.nextInt(1000+1)*2;
             v1 /= 1000;
             v1 -= 1;
@@ -62,17 +62,17 @@ public class Helper {
         return x;
     }
 
-    public int bernouilli_distribution(double prob){
-        Random r = null;
+    public boolean bernouilli_distribution(double prob){
+        Random r = new Random();
         float j1 = (float) r.nextInt(1000+1)/1000;
         if (j1 < prob)
-            return 0;
+            return false;
         else
-            return 1;
+            return true;
     }
 
     public int uniform_distribution(double a, double b){
-        Random r = null;
+        Random r = new Random();
         float j1 = (float) r.nextInt(1000+1)/1000;
         return (int) ((int) a + (b-a) * j1);
     }
