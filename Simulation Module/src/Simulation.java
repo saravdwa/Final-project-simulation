@@ -6,14 +6,12 @@ import static java.lang.Double.max;
 public class Simulation {
     //files : ik heb nu een relatief pad gemaakt, zodat het op iedereen zijn computer werkt
 
-    String filePath = "src/input-S1-14.txt";
+    String filePath = "Simulation Module/src/input-S1-14.txt";
     File file = new File(filePath);
     String inputFileName = file.getPath();
-    //String inputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\input-S1-14.txt";
-    String filePath2 = "src/output.txt";
+    String filePath2 = "Simulation Module/src/output.txt";
     File file2 = new File(filePath2);
     String outputFileName = file2.getPath();
-    //String outputFileName = "C:\\Users\\info\\IdeaProjects\\Final-project-simulation\\Simulation Module\\src\\output.txt";
 
 
     // Variables and parameters (given in assignment explanation)
@@ -77,6 +75,10 @@ public class Simulation {
         weekSchedule = new Slot[D][s]; //weekschedule has D(=6) rows for the days of the week and s columns with the number of slots per day
         for (this.d = 0; this.d < D; this.d++) {
             weekSchedule[this.d] = new Slot[S]; //each day in the weekschedule is filled with a number of slots
+            for(int s = 0; s < 32; s++)
+            {
+                weekSchedule[d][this.s] = new Slot();
+            }
         }
         movingAvgElectiveAppWT = new double[W]; //make an array for the moving average of the waiting time for planned patients with length W
         movingAvgElectiveScanWT = new double[W];
@@ -184,7 +186,7 @@ public class Simulation {
                     if (rule == 1) { // FIFO
                         weekSchedule[d][s].appTime = time;
                     } else if (rule == 2) {
-                        // TODO: Bailey-Welch rule
+                        //  Bailey-Welch rule
                         if (countPatient < 2) {
                             weekSchedule[d][countPatient].appTime = time;
                         } else {
@@ -192,15 +194,14 @@ public class Simulation {
                         }
                         countPatient++;
                     } else if (rule == 3) {
-                        // TODO: Blocking rule
-
+                        // Blocking rule
                         while (countPatient < B) {
                             weekSchedule[d][countPatient].appTime = time;
                             countPatient++;
                         }
                         countPatient = 0;
                     } else if (rule == 4) {
-                        // TODO: Benchmark rule
+                        // Benchmark rule
                         double k = 0.5;
                         weekSchedule[d][s].appTime = time - k * stdevElectiveDuration;
                     }
@@ -284,7 +285,7 @@ public class Simulation {
 
             // OVERTIME
             if (prevDay > -1 && prevDay != patients.get(i).scanDay) {
-                if (d == 3 || d == 5) {
+                if (prevDay == 3 || prevDay == 5) {
                     movingAvgOT[prevWeek] += max(0.0, prevScanEndTime - 13);
                 } else {
                     movingAvgOT[prevWeek] += max(0.0, prevScanEndTime - 17);
@@ -307,8 +308,14 @@ public class Simulation {
 
             //set prev patient
             if (patients.get(i).isNoShow) {
-                //prevScanEndTime stays the same, it is the end time of the patient before the no-show patient
                 prevIsNoShow = true;
+                if (patients.get(i).scanWeek != prevWeek || patients.get(i).scanDay != prevDay) {
+
+                    prevScanEndTime = weekSchedule[patients.get(i).scanDay][patients.get(i).slotNr].startTime;
+
+                }
+                //prevScanEndTime stays the same, it is the end time of the patient before the no-show patient
+
             } else {
                 prevScanEndTime = patients.get(i).scanTime + patients.get(i).duration;
                 prevIsNoShow = false;
@@ -643,9 +650,9 @@ public class Simulation {
                 if (timeCount1.compareTo(timeCount2) != 0) {
                     return (timeCount1 < timeCount2) ? 1 : 0;
                 }
-                if (p1.scanType == 2)
+                if (p1.patientType == 2)
                     return 1;
-                if (p2.scanType == 2)
+                if (p2.patientType == 2)
                     return 0;
                 return 1;
             }
@@ -663,9 +670,9 @@ public class Simulation {
             if (scanAppTimeCount1.compareTo(scanAppTimeCount2) != 0) {
                 return (scanAppTimeCount1 < scanAppTimeCount2) ? 1 : 0;
             }
-            if (p1.scanType == 2)
+            if (p1.patientType == 2)
                 return 1;
-            if (p2.scanType == 2)
+            if (p2.patientType == 2)
                 return 0;
             if (p1.nr < p2.nr)
                 return 1;
