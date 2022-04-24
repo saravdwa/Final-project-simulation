@@ -5,6 +5,7 @@ import static java.lang.Double.max;
 
 public class Simulation {
 
+
     //files : ik heb een relatief pad gemaakt, zodat het op iedereen zijn computer werkt
     String filePath = "Simulation Module/src/input-S1-14.txt";
     File file = new File(filePath);
