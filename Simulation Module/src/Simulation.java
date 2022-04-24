@@ -10,9 +10,6 @@ public class Simulation {
     String filePath = "Simulation Module/src/input-S1-14.txt";
     File file = new File(filePath);
     String inputFileName = file.getPath();
-    String filePath2 = "output.txt";
-    File file2 = new File(filePath2);
-    String outputFileName = file2.getPath();
 
 
     // Variables and parameters (given in assignment explanation)
@@ -59,7 +56,7 @@ public class Simulation {
         // Set test case variables
         //TODO: each time you make a different simulation: set these variables to the correct values
         W = 10;                      // number of weeks to simulate = run length
-        R = 2;                      // number of replications
+        R = 10;                      // number of replications
         rule = 1;                   // the appointment scheduling rule to apply
 
         // Initialize variables
@@ -117,22 +114,6 @@ public class Simulation {
         double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
         System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
-
-        File file = new File(outputFileName);
-        boolean fileCreated = false;
-        // if file doesnt exists, then create it
-        if (!file.exists()) {
-            fileCreated = file.createNewFile();                           // create the file
-        } else {
-            PrintWriter writer = new PrintWriter(file);     // empty the file
-            writer.print("");
-            writer.close();
-        }
-        if (fileCreated) {
-            FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(), true); // APPENDS the text file with anything printed to the file during the rest of the procedure
-            PrintWriter printWriter = new PrintWriter(fileWriter);                       // OPEN OUTPUT FILE
-            printWriter.println("test");
-        }
     }
 
     public void setWeekSchedule() throws FileNotFoundException {
