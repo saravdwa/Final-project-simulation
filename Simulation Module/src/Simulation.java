@@ -38,6 +38,7 @@ public class Simulation {
     int rule;                          // the appointment scheduling rule
     Slot[][] weekSchedule;  // array of the cyclic slot schedule (days-slots)
 
+    Random random = new Random();
 
     // Variables within ONE simuation
     List<Patient> patients = new ArrayList<>(); // patient list
@@ -57,7 +58,7 @@ public class Simulation {
         // Set test case variables
         //TODO: each time you make a different simulation: set these variables to the correct values
         W = 10;                      // number of weeks to simulate = run length
-        R = 1;                      // number of replications
+        R = 2;                      // number of replications
         rule = 1;                   // the appointment scheduling rule to apply
 
         // Initialize variables
@@ -93,19 +94,19 @@ public class Simulation {
         double OV = 0; //overtime weighted
         setWeekSchedule();
         // set cyclic slot schedule based on given input file
-        Random r = new Random();
-        System.out.print("r \t elAppWT \t elScanWT \t urScanWT \t OT \t OV \n");
+        //Random r = new Random();
+        System.out.print("r \t elAppWT \t elScanWT \t urScanWT \t OT \t OV \n ");
         // run R replications over all the slots s
-        for (s = 0; s < R; s++) {
+        for (int f = 0; f < R; f++) {
             resetSystem();          // reset all variables related to 1 replication
-            r.setSeed(s); // set seed value for random value generator
+            random.setSeed(s);           // set seed value for random value generator
             runOneSimulation();     // run 1 simulation / replication
             electiveAppWT += avgElectiveAppWT;
             electiveScanWT += avgElectiveScanWT;
             urgentScanWT += avgUrgentScanWT;
             OT += avgOT;
             OV += avgElectiveAppWT / weightEl + (avgUrgentScanWT / weightUr);
-            System.out.printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", r, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
+            System.out.printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", f, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
         }
         electiveAppWT = electiveAppWT / R; //divide by the number of replications to get the value once
         electiveScanWT = electiveScanWT / R;
@@ -336,10 +337,9 @@ public class Simulation {
 
     public int getRandomScanType() {
 
-        Random s = new Random();
 
         float r;
-        r = (float) s.nextInt(1000 - 1) / 1000;
+        r = (float) random.nextInt(1000 - 1) / 1000;
 
         int type = -1;
         for (int i = 0; i < 5 && type == -1; i++) {
@@ -456,17 +456,18 @@ public class Simulation {
         boolean found = false;
         for (s = 0; s < S && !found; s++) {
             if (weekSchedule[d][s].patientType == 1) {
-                //day[0] = d;
+                day[0] = d;
                 slot[0] = s;
                 found = true;
             }
-            //urgent
-            for (s = 0; s < S && !found; s++) {
-                if (weekSchedule[d][s].patientType == 2) {
-                    //day[1] = d;
-                    slot[1] = s;
-                    found = true;
-                }
+        }
+        //urgent
+        found = false;
+        for (s = 0; s < S && !found; s++) {
+            if (weekSchedule[d][s].patientType == 2) {
+                day[1] = d;
+                slot[1] = s;
+                found = true;
             }
         }
 
@@ -476,7 +477,8 @@ public class Simulation {
         int numberOfElectivePerWeek = 0;   // keep track of week to know when to update moving average elective appointment waiting time
         double wt;
         int slotNr;
-        for (Patient value : patients) {
+        for (
+                Patient value : patients) {
             //Patient *pat = &*patient;
 
             //set index i dependant on patient type
