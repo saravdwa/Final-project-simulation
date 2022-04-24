@@ -59,7 +59,7 @@ public class Simulation {
         // Set test case variables
         //TODO: each time you make a different simulation: set these variables to the correct values
         W = 10;                      // number of weeks to simulate = run length
-        R = 2;                      // number of replications
+        R = 100;                      // number of replications
         rule = 1;                   // the appointment scheduling rule to apply
 
         // Initialize variables
