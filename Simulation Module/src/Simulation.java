@@ -310,8 +310,6 @@ public class Simulation {
 
 
     public int getRandomScanType() {
-
-
         float r;
         r = (float) random.nextInt(1000 - 1) / 1000;
 
