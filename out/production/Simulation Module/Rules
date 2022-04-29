@@ -1,0 +1,44 @@
+ double time;
+        for (d = 0; d < D; d++) {
+            time = 8; // start time slot schedule
+            int countPatient = 0;
+            int B = 2; // 2 blocks for blocking rule
+            for (s = 0; s < S; s++) {
+                // start time slot
+                weekSchedule[d][s].startTime = time;
+                // appointment time slot
+                if (weekSchedule[d][s].slotType != 1) {    // all slot types not elective : appointment time = slot start time (because urgent!)
+                    weekSchedule[d][s].appTime = time;
+                } else {                                   // elective slots: appointment time is set according to rule ! (because can be late)
+                    if (rule == 1) { // FIFO
+                        weekSchedule[d][s].appTime = time;
+                    } else if (rule == 2) {
+                        // TODO: Bailey-Welch rule
+                        if (countPatient < 2) {
+                            weekSchedule[d][countPatient].appTime = time;
+                        } else {
+                            weekSchedule[d][s].appTime = time - slotLength;
+                        }
+                        countPatient++;
+                    } else if (rule == 3) {
+                        // TODO: Blocking rule
+
+                        while (countPatient < B) {
+                            weekSchedule[d][countPatient].appTime = time;
+                            countPatient++;
+                        }
+                        countPatient = 0;
+                    } else if (rule == 4) {
+                        // TODO: Benchmark rule
+                        double k = 0.5;
+                        weekSchedule[d][s].appTime = time - k * stdevElectiveDuration;
+                    }
+                }
+
+                //update time variable
+                time += slotLength;
+                if (time == 12) {
+                    time = 13;
+                } // skip to the end of the lunch break
+            }
+        }
