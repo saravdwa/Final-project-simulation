@@ -10,9 +10,6 @@ public class Simulation {
     String filePath = "Simulation Module/src/input-S1-14.txt";
     File file = new File(filePath);
     String inputFileName = file.getPath();
-    String filePath2 = "output.txt";
-    File file2 = new File(filePath2);
-    String outputFileName = file2.getPath();
 
 
     // Variables and parameters (given in assignment explanation)
@@ -34,8 +31,8 @@ public class Simulation {
     double weightEl = 1.0 / 168.0;      // objective weight elective appointment wait time: 168h/week for planned patients (see objective function)
     double weightUr = 1.0 / 9.0;        // objective weight urgent scan wait time: 9h/week for urgent patients (see objective function)
 
-    int W, R;                          // number of weeks 😊 runs lenght) and number of replications (set their values yourself in the initalization method!)
-    int d, s, w, r;
+    int W, R;                          // number of weeks 😊 runs length) and number of replications (set their values yourself in the initalization method!)
+    int d, s, w;
     int rule;                          // the appointment scheduling rule
     Slot[][] weekSchedule;  // array of the cyclic slot schedule (days-slots)
 
@@ -117,22 +114,6 @@ public class Simulation {
         double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
         System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
-
-        File file = new File(outputFileName);
-        boolean fileCreated = false;
-        // if file doesnt exists, then create it
-        if (!file.exists()) {
-            fileCreated = file.createNewFile();                           // create the file
-        } else {
-            PrintWriter writer = new PrintWriter(file);     // empty the file
-            writer.print("");
-            writer.close();
-        }
-        if (fileCreated) {
-            FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(), true); // APPENDS the text file with anything printed to the file during the rest of the procedure
-            PrintWriter printWriter = new PrintWriter(fileWriter);                       // OPEN OUTPUT FILE
-            printWriter.println("test");
-        }
     }
 
     public void setWeekSchedule() throws FileNotFoundException {
@@ -282,7 +263,7 @@ public class Simulation {
                 } else {
                     movingAvgOT[prevWeek] += max(0.0, prevScanEndTime - 17);
                 }
-                if (d == 3 || d == 5) {
+                if (prevDay == 3 || prevDay == 5) {
                     avgOT += max(0.0, prevScanEndTime - 13);
                 } else {
                     avgOT += max(0.0, prevScanEndTime - 17);
@@ -325,20 +306,10 @@ public class Simulation {
         avgUrgentScanWT = avgUrgentScanWT / numberOfPatients[1];
         avgOT = avgOT / (D * W);
 
-
-        // print moving avg
-    /*FILE *file = fopen("/Users/tinemeersman/Documents/project SMA 2022 student code /output-movingAvg.txt", "a"); // TODO: use your own directory
-    fprintf(file,"week \t elAppWT \t elScanWT \t urScanWT \t OT \n");
-    for(w = 0; w < W; w++){
-        fprintf(file, "%d \t %.2f \t %.2f \t %.2f \t %.2f \n", w, movingAvgElectiveAppWT[w], movingAvgElectiveScanWT[w], movingAvgUrgentScanWT[w], movingAvgOT[w]);
-    }
-    fclose(file);*/
     }
 
 
     public int getRandomScanType() {
-
-
         float r;
         r = (float) random.nextInt(1000 - 1) / 1000;
 
