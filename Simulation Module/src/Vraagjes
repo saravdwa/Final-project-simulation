@@ -1,7 +1,3 @@
 Voor 20/04:
 
-    -blocking rule: should this be programmed with the idea in mind that B can be other than 2?
-        -> B = number of blocks or number of slots per block?
-    - is Bailey welch rule correct?
-    -moving averages: division by zero in runOneSimulation
-    -probUrgentType wordt momenteel nergens gebruikt?
+    -welke formule moeten moeten we gebruiken voor stdev in excel?

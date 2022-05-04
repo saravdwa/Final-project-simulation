@@ -16,6 +16,8 @@ public class Simulation {
     int D = 6;                         // number of days per week (NOTE: Sunday not included! so do NOT use to calculate appointment waiting time)
     int amountOTSlotsPerDay = 10;      // number of overtime slots per day
     int S = 32 + amountOTSlotsPerDay;  // number of slots per day
+    int countIterationForWelch = 0;
+    int warmUpRemoved = 325;
     double slotLength = 15.0 / 60.0;             // duration of a slot (in hours)
     double lambdaElective = 28.345; //number of elective arrivals per day follows a Poisson distribution with this lambda
     double meanTardiness = 0;  //tardiness follows a normal distribution with a mean of 0min
@@ -55,8 +57,8 @@ public class Simulation {
     public Simulation() {
         // Set test case variables
         //TODO: each time you make a different simulation: set these variables to the correct values
-        W = 10;                      // number of weeks to simulate = run length
-        R = 100;                      // number of replications
+        W = 100;                      // number of weeks to simulate = run length
+        R = 450;                      // number of replications
         rule = 1;                   // the appointment scheduling rule to apply
 
         // Initialize variables
@@ -95,22 +97,26 @@ public class Simulation {
         //Random r = new Random();
         System.out.print("r \t elAppWT \t elScanWT \t urScanWT \t OT \t OV \n ");
         // run R replications over all the slots s
-        for (int f = 0; f < R; f++) {
+        for (int f = 1; f <= R; f++) {
             resetSystem();          // reset all variables related to 1 replication
             random.setSeed(s);           // set seed value for random value generator
             runOneSimulation();     // run 1 simulation / replication
-            electiveAppWT += avgElectiveAppWT;
-            electiveScanWT += avgElectiveScanWT;
-            urgentScanWT += avgUrgentScanWT;
-            OT += avgOT;
-            OV += avgElectiveAppWT / weightEl + (avgUrgentScanWT / weightUr);
-            System.out.printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", f, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
+            countIterationForWelch++;
+            if (countIterationForWelch > 125) {
+                electiveAppWT += avgElectiveAppWT;
+                electiveScanWT += avgElectiveScanWT;
+                urgentScanWT += avgUrgentScanWT;
+                OT += avgOT;
+                OV += avgElectiveAppWT / weightEl + (avgUrgentScanWT / weightUr);
+                System.out.printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", f, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
+
+            }
         }
-        electiveAppWT = electiveAppWT / R; //divide by the number of replications to get the value once
-        electiveScanWT = electiveScanWT / R;
-        urgentScanWT = urgentScanWT / R;
-        OT = OT / R;
-        OV = OV / R;
+        electiveAppWT = electiveAppWT / warmUpRemoved; //divide by the number of replications to get the value once
+        electiveScanWT = electiveScanWT / warmUpRemoved;
+        urgentScanWT = urgentScanWT / warmUpRemoved;
+        OT = OT / warmUpRemoved;
+        OV = OV / warmUpRemoved;
         double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
         System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
