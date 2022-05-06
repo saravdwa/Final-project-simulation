@@ -108,7 +108,7 @@ public class Simulation {
                 urgentScanWT += avgUrgentScanWT;
                 OT += avgOT;
                 OV += avgElectiveAppWT / weightEl + (avgUrgentScanWT / weightUr);
-                System.out.printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", f, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
+                System.out.printf("%d \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", f, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
 
             }
         }
@@ -118,7 +118,7 @@ public class Simulation {
         OT = OT / warmUpRemoved;
         OV = OV / warmUpRemoved;
         double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
-        System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
+        System.out.printf("Avg.: \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
     }
 
