@@ -38,7 +38,6 @@ public class Simulation {
     int rule;                          // the appointment scheduling rule
     Slot[][] weekSchedule;  // array of the cyclic slot schedule (days-slots)
 
-    Random random = new Random();
 
     // Variables within ONE simuation
     List<Patient> patients = new ArrayList<>(); // patient list
@@ -52,6 +51,9 @@ public class Simulation {
     double avgOT;                      // average overtime
     int numberOfElectivePatientsPlanned;
     int numberOfUrgentPatientsPlanned;
+
+    Random random = new Random();
+    Random commonR = new Random();
 
     // Initialization of a "simulation" object
     public Simulation() {
@@ -95,12 +97,14 @@ public class Simulation {
         setWeekSchedule();
         // set cyclic slot schedule based on given input file
         //Random r = new Random();
-        System.out.print("r \t elAppWT \t elScanWT \t urScanWT \t OT \t OV \n ");
+        System.out.print("r \t common random number \t elAppWT \t elScanWT \t urScanWT \t OT \t OV \n ");
         // run R replications over all the slots s
+        //Random commonR = new Random();
         for (int f = 1; f <= R; f++) {
             resetSystem();          // reset all variables related to 1 replication
-            random.setSeed(s);           // set seed value for random value generator
+            commonR.setSeed(f);         // set seed value for random value generator
             runOneSimulation();     // run 1 simulation / replication
+            //System.out.printf("%.6f \n", niquetamere.nextFloat()); //common random numbers
             countIterationForWelch++;
             if (countIterationForWelch > 125) {
                 electiveAppWT += avgElectiveAppWT;
@@ -108,7 +112,8 @@ public class Simulation {
                 urgentScanWT += avgUrgentScanWT;
                 OT += avgOT;
                 OV += avgElectiveAppWT / weightEl + (avgUrgentScanWT / weightUr);
-                System.out.printf("%d \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", f, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
+                float getRandom = commonR.nextFloat();
+                System.out.printf("%d \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", f, getRandom, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
 
             }
         }
@@ -118,11 +123,11 @@ public class Simulation {
         OT = OT / warmUpRemoved;
         OV = OV / warmUpRemoved;
         double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
-        System.out.printf("Avg.: \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
+        //System.out.printf("Avg.: \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
     }
 
     public void setWeekSchedule() throws FileNotFoundException {
-        // Read the schedule from the textfile and set the slot types (0=none, 1=elective, 2=urgent within normal working hours)
+        // Read the schedule from the text-file and set the slot types (0=none, 1=elective, 2=urgent within normal working hours)
         InputStream input = new FileInputStream(inputFileName);
         Scanner inputFile = new Scanner(input);
         int elementInt;

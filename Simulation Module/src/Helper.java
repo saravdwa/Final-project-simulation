@@ -5,8 +5,9 @@ import static java.lang.StrictMath.*;
 
 public class Helper {
 
+
     public double exponential_distribution(double lambda){
-        Random r = new Random(); //ma zij doet dat niet? dus mss moet dat weg
+        Random r = new Random();
         float j1 = (float) r.nextInt(1000+1)/1000;
         if (j1 == 0) {
             j1 += 0.0001;
