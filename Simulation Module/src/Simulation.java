@@ -59,7 +59,7 @@ public class Simulation {
         //TODO: each time you make a different simulation: set these variables to the correct values
         W = 100;                      // number of weeks to simulate = run length
         R = 450;                      // number of replications
-        rule = 1;                   // the appointment scheduling rule to apply
+        rule = 2;                   // the appointment scheduling rule to apply
 
         // Initialize variables
         avgElectiveAppWT = 0; //in the beginning of the simulation, there are not yet waiting times
@@ -119,7 +119,6 @@ public class Simulation {
         OV = OV / warmUpRemoved;
         double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
         System.out.printf("Avg.: \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
-
     }
 
     public void setWeekSchedule() throws FileNotFoundException {
@@ -150,6 +149,7 @@ public class Simulation {
 
         // set start and appointment time
         double time;
+        double startDay = 8;
         for (d = 0; d < D; d++) {
             time = 8; // start time slot schedule
             int countPatient = 0;
@@ -167,18 +167,19 @@ public class Simulation {
                     } else if (rule == 2) {
                         //  Bailey-Welch rule
                         if (countPatient < 2) {
-                            weekSchedule[d][countPatient].appTime = time;
+                            weekSchedule[d][countPatient].appTime = startDay;
                         } else {
                             weekSchedule[d][s].appTime = time - slotLength;
                         }
                         countPatient++;
                     } else if (rule == 3) {
                         // Blocking rule
-                        while (countPatient < B) {
-                            weekSchedule[d][countPatient].appTime = time;
-                            countPatient++;
+                        if (s%2 == 0) {
+                            weekSchedule[d][s].appTime = time;
+                        } else {
+                            weekSchedule[d][s].appTime = time - slotLength;
                         }
-                        countPatient = 0;
+
                     } else if (rule == 4) {
                         // Benchmark rule
                         double k = 0.5;
