@@ -61,7 +61,7 @@ public class Simulation {
         //TODO: each time you make a different simulation: set these variables to the correct values
         W = 100;                      // number of weeks to simulate = run length
         R = 450;                      // number of replications
-        rule = 2;                   // the appointment scheduling rule to apply
+        rule = 3;                   // the appointment scheduling rule to apply
 
         // Initialize variables
         avgElectiveAppWT = 0; //in the beginning of the simulation, there are not yet waiting times
@@ -111,9 +111,9 @@ public class Simulation {
                 electiveScanWT += avgElectiveScanWT;
                 urgentScanWT += avgUrgentScanWT;
                 OT += avgOT;
-                OV += avgElectiveAppWT / weightEl + (avgUrgentScanWT / weightUr);
+                OV += avgElectiveAppWT * weightEl + (avgUrgentScanWT * weightUr);
                 float getRandom = commonR.nextFloat();
-                System.out.printf("%d \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", f, getRandom, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
+                System.out.printf("%d \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", f, getRandom, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT * weightEl + avgUrgentScanWT * weightUr);
 
             }
         }
@@ -122,8 +122,8 @@ public class Simulation {
         urgentScanWT = urgentScanWT / warmUpRemoved;
         OT = OT / warmUpRemoved;
         OV = OV / warmUpRemoved;
-        double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
-        //System.out.printf("Avg.: \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
+        double objectiveValue = electiveAppWT * weightEl + urgentScanWT * weightUr;
+        System.out.printf("Avg.: \t \t \t \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
     }
 
     public void setWeekSchedule() throws FileNotFoundException {
