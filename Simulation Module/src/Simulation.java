@@ -2,6 +2,8 @@ import java.io.*;
 import java.util.*;
 
 import static java.lang.Double.max;
+import static java.lang.StrictMath.log;
+import static java.lang.StrictMath.sqrt;
 
 public class Simulation {
 
@@ -33,7 +35,7 @@ public class Simulation {
     double weightEl = 1.0 / 168.0;      // objective weight elective appointment wait time: 168h/week for planned patients (see objective function)
     double weightUr = 1.0 / 9.0;        // objective weight urgent scan wait time: 9h/week for urgent patients (see objective function)
 
-    int W, R;                          // number of weeks 😊 runs length) and number of replications (set their values yourself in the initalization method!)
+    int W , R;                          // number of weeks 😊 runs length) and number of replications (set their values yourself in the initalization method!)
     int d, s, w;
     int rule;                          // the appointment scheduling rule
     Slot[][] weekSchedule;  // array of the cyclic slot schedule (days-slots)
@@ -54,6 +56,14 @@ public class Simulation {
 
     Random random = new Random();
     Random commonR = new Random();
+    Random randFct = new Random();
+    Random[] listRandom = new Random[451];
+    Random[] listAntiRandom = new Random[451];
+
+    public Random generateRandom(){
+        return randFct;
+    }
+
 
     // Initialization of a "simulation" object
     public Simulation() {
@@ -94,17 +104,19 @@ public class Simulation {
         double urgentScanWT = 0;
         double OT = 0; //overtime
         double OV = 0; //overtime weighted
+        double OV2 = 0;
         setWeekSchedule();
         // set cyclic slot schedule based on given input file
-        //Random r = new Random();
-        System.out.print("r \t common random number \t elAppWT \t elScanWT \t urScanWT \t OT \t OV \n ");
+        System.out.print("r \t common random number \t elAppWT \t elScanWT \t urScanWT \t OT \t \t \t OV \n ");
+
         // run R replications over all the slots s
-        //Random commonR = new Random();
         for (int f = 1; f <= R; f++) {
             resetSystem();          // reset all variables related to 1 replication
-            commonR.setSeed(f);         // set seed value for random value generator
+            randFct.setSeed(f);
+            listRandom[f] = randFct;
+            //listAntiRandom[f].nextFloat() = 1 - randFct.nextFloat();
+            commonR.setSeed(f);// set seed value for random value generator
             runOneSimulation();     // run 1 simulation / replication
-            //System.out.printf("%.6f \n", niquetamere.nextFloat()); //common random numbers
             countIterationForWelch++;
             if (countIterationForWelch > 125) {
                 electiveAppWT += avgElectiveAppWT;
@@ -112,18 +124,20 @@ public class Simulation {
                 urgentScanWT += avgUrgentScanWT;
                 OT += avgOT;
                 OV += avgElectiveAppWT * weightEl + (avgUrgentScanWT * weightUr);
+                OV2 += 5;
                 float getRandom = commonR.nextFloat();
-                System.out.printf("%d \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", f, getRandom, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT * weightEl + avgUrgentScanWT * weightUr);
+                System.out.printf("%d \t %.6f \t \t\t %.6f \t %.6f \t \t %.6f \t %.6f \t %.6f \n", f, getRandom, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT * weightEl + avgUrgentScanWT * weightUr);
 
             }
         }
+
         electiveAppWT = electiveAppWT / warmUpRemoved; //divide by the number of replications to get the value once
         electiveScanWT = electiveScanWT / warmUpRemoved;
         urgentScanWT = urgentScanWT / warmUpRemoved;
         OT = OT / warmUpRemoved;
         OV = OV / warmUpRemoved;
         double objectiveValue = electiveAppWT * weightEl + urgentScanWT * weightUr;
-        System.out.printf("Avg.: \t \t \t \t %.6f \t %.6f \t %.6f \t %.6f \t %.6f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
+        System.out.printf("Avg.: \t \t \t \t\t\t %.6f \t %.6f \t\t %.6f \t %.6f \t %.6f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
     }
 
     public void setWeekSchedule() throws FileNotFoundException {
@@ -179,7 +193,7 @@ public class Simulation {
                         countPatient++;
                     } else if (rule == 3) {
                         // Blocking rule
-                        if (s%2 == 0) {
+                        if (s % 2 == 0) {
                             weekSchedule[d][s].appTime = time;
                         } else {
                             weekSchedule[d][s].appTime = time - slotLength;
@@ -224,7 +238,6 @@ public class Simulation {
         generatePatients();     // create patient arrival events (elective patients call, urgent patient arrive at the hospital)
         schedulePatients();     // schedule urgent and elective patients in slots based on their arrival events => detrmine the appointment wait time
         sortPatientsOnAppTime();   // sort patients on their appointment time (unscheduled patients are grouped at the end of the list)
-
         // determine scan wait time per patient and overtime per day
         int prevWeek = 0;
         int prevDay = -1;
@@ -335,28 +348,30 @@ public class Simulation {
     }
 
     public void generatePatients() {
+
         double arrivalTimeNext;
         int counter = 0; // total number of patients so far
         int patientType, scanType, endTime;
         double callTime, tardiness, duration, lambda;
         boolean noShow;
-        Helper helper = new Helper();
         for (w = 0; w < W; w++) {
             for (d = 0; d < D; d++) { // not on Sunday
                 // generate ELECTIVE patients for this day
                 if (d < D - 1) {  // not on Saturday either
-                    arrivalTimeNext = 8 + helper.exponential_distribution(lambdaElective) * (17 - 8);
+                    arrivalTimeNext = 8 + exponential_distribution(lambdaElective) * (17 - 8);
                     while (arrivalTimeNext < 17) { // desk open from 8h until 17h
+
                         patientType = 1;                // elective
                         scanType = 0;                   // no scan type
                         callTime = arrivalTimeNext;     // set call time, i.e. arrival event time
-                        tardiness = helper.normal_distribution(meanTardiness, stdevTardiness) / 60.0;       // in practice this is not known yet at time of call
-                        noShow = helper.bernouilli_distribution(probNoShow);                                // in practice this is not known yet at time of call
-                        duration = helper.normal_distribution(meanElectiveDuration, stdevElectiveDuration) / 60.0; // in practice this is not known yet at time of call
+                        tardiness = normal_distribution(meanTardiness, stdevTardiness) / 60.0;       // in practice this is not known yet at time of call
+
+                        noShow = bernouilli_distribution(probNoShow);                                // in practice this is not known yet at time of call
+                        duration = normal_distribution(meanElectiveDuration, stdevElectiveDuration) / 60.0; // in practice this is not known yet at time of call
                         Patient patient = new Patient(counter, patientType, scanType, w, d, callTime, tardiness, noShow, duration);
                         patients.add(patient);
                         counter++;
-                        arrivalTimeNext = arrivalTimeNext + helper.exponential_distribution(lambdaElective) * (17 - 8); // arrival time of next patient (if < 17h)
+                        arrivalTimeNext = arrivalTimeNext + exponential_distribution(lambdaElective) * (17 - 8); // arrival time of next patient (if < 17h)
                     }
                 }
 
@@ -368,19 +383,19 @@ public class Simulation {
                     lambda = lambdaUrgent[0];
                     endTime = 17;
                 }
-                arrivalTimeNext = 8 + helper.exponential_distribution(lambda) * (endTime - 8);
+                arrivalTimeNext = 8 + exponential_distribution(lambda) * (endTime - 8);
                 while (arrivalTimeNext < endTime) { // desk open from 8h until 17h
                     patientType = 2;                // urgent
                     scanType = getRandomScanType(); // set scan type
                     callTime = arrivalTimeNext;     // set arrival time, i.e. arrival event time
                     tardiness = 0;                  // urgent patients have an arrival time = arrival event time
                     noShow = false;                 // urgent patients are never no-show
-                    duration = helper.normal_distribution(meanUrgentDuration[scanType], stdevUrgentDuration[scanType]) / 60.0; // in practice this is not known yet at time of arrival
+                    duration = normal_distribution(meanUrgentDuration[scanType], stdevUrgentDuration[scanType]) / 60.0; // in practice this is not known yet at time of arrival
                     Patient patient = new Patient(counter, patientType, scanType, w, d, callTime, tardiness, noShow, duration);
                     //ArrayList<patient> pa = new ArrayList<patient>();
                     patients.add(patient);
                     counter++;
-                    arrivalTimeNext = arrivalTimeNext + helper.exponential_distribution(lambda) * (endTime - 8); // arrival time of next patient (if < 17h)
+                    arrivalTimeNext = arrivalTimeNext + exponential_distribution(lambda) * (endTime - 8); // arrival time of next patient (if < 17h)
                 }
             }
         }
@@ -616,6 +631,51 @@ public class Simulation {
                 return 0;
             return 1;
         });
+    }
+
+    public double exponential_distribution(double lambda) {
+        Random r = generateRandom();
+        float j1 = (float) r.nextInt(1000 + 1) / 1000;
+        if (j1 == 0) {
+            j1 += 0.0001;
+        }
+        float j2 = (float) (-log(j1) / lambda);
+
+        return j2;
+    }
+
+    public int normal_distribution(double mean, double stdev) {
+        // TO MODEL BASED ON CUMULATIVE DENSITY FUNCTION OF NORMAL DISTRIBUTION BASED ON BOOK OF SHELDON ROSS, Simulation, The polar method, p80.
+
+        float v1, v2, t;
+        int x;
+        Random r = generateRandom();
+        do {
+            //System.out.println("this is the random from norm: " + r.nextFloat());
+            v1 = (float) r.nextInt(1000 + 1) * 2;
+            //System.out.println("this is random number exp: " + v1);
+            v1 /= 1000;
+            v1 -= 1;
+            v2 = (float) r.nextInt(1000 + 1) * 2;
+            v2 /= 1000;
+            v2 -= 1;
+            t = v1 * v1 + v2 * v2;
+        }
+        while (t >= 1 || t == 0);
+        float multiplier = (float) sqrt(-2 * log(t) / t);
+        x = (int) (v1 * multiplier * stdev + mean);
+        return x;
+    }
+
+    public boolean bernouilli_distribution(double prob) {
+        Random r = generateRandom();
+        //System.out.println("this is the random from bern: " + seed);
+        float j1 = (float) r.nextInt(1000 + 1) / 1000;
+        //System.out.println("this is random number exp: " + j1);
+        if (j1 < prob)
+            return false;
+        else
+            return true;
     }
 }
 

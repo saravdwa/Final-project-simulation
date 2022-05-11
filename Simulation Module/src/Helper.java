@@ -1,10 +1,9 @@
+/*
 import java.util.Random;
-
 import static java.lang.StrictMath.*;
 
 
 public class Helper {
-
 
     public double exponential_distribution(double lambda){
         Random r = new Random();
@@ -13,6 +12,7 @@ public class Helper {
             j1 += 0.0001;
         }
         float j2 = (float) (-log(j1)/lambda);
+        //System.out.println("This is the seed in exp "+ seed);
         return j2;
     }
 
@@ -42,6 +42,7 @@ public class Helper {
         return (int) (k-1);
     }
 
+
     public int normal_distribution(double mean, double stdev){
         // TO MODEL BASED ON CUMULATIVE DENSITY FUNCTION OF NORMAL DISTRIBUTION BASED ON BOOK OF SHELDON ROSS, Simulation, The polar method, p80.
 
@@ -49,6 +50,9 @@ public class Helper {
         int x;
         do{
             Random r = new Random();
+            //int i = sim.getIterator();
+            //Random r = sim.listRandom[i];
+            //r.setSeed(seed);
             v1 = (float) r.nextInt(1000+1)*2;
             v1 /= 1000;
             v1 -= 1;
@@ -60,6 +64,7 @@ public class Helper {
         while(t>=1||t==0);
         float multiplier = (float) sqrt(-2*log(t)/t);
         x = (int) (v1 * multiplier * stdev + mean);
+
         return x;
     }
 
@@ -100,3 +105,5 @@ public class Helper {
         return (int) (x-1);
     }
 }
+
+ */

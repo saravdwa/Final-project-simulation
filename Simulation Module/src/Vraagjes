@@ -1,3 +1,43 @@
-Voor 20/04:
+Voor 11/05:
 
-    -welke formule moeten moeten we gebruiken voor stdev in excel?
+    -in C++, there is a common memory across the whole program, using the same random number
+    everywhere in each iteration in runSimulations but not in java
+
+    -we tried to make a getter and setter to get the seed from the iteration into the helper
+    class so that this would to the same, but it does not work
+
+    -we tried to give the seed as a parameter to all the functions but didn't work
+
+    -we tried to create a function that gives back a random for each seed but didn't work
+
+    --> problem: when getting the seed into helper, it does not change, while the seed in simulation is changing
+
+
+    2nd problem: ones we get the same random number everywhere, you cannot do arithmetic operations on a random
+    so I use random.nextfloat to calculate the complementary random number
+
+    3rd problem: ones that is done, I don't understand where else in the program a random number is used, only
+    in the helper class, to calculate the new OV
+
+
+
+
+
+       public void getIterator(int seed) {
+            //System.out.println("This is the seed  "+ setSeed);
+            setSeed = seed;
+        }
+
+        public int getSeed() {
+            //int test = setSeed;
+            //System.out.println("TEST:  "+ test);
+            return setSeed;
+        }
+
+        public Random generateRand(int seed){
+            Random rand = new Random();
+            seed = setSeed;
+            //System.out.println("This is the seed  "+ setSeed);
+            rand.setSeed(seed);
+            return rand;
+        }
